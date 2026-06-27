@@ -6,116 +6,377 @@
     <title>App Compiler</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: monospace; background: #0f0f0f; color: #e0e0e0; padding: 2rem; }
-        h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #ffffff; }
-        p { font-size: 0.9rem; color: #888; margin-bottom: 1.5rem; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        /* Top nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #ebebeb;
+            background: #fff;
+        }
+        .nav-logo {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-logo span {
+            width: 28px; height: 28px;
+            background: #1a1a1a;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 13px;
+        }
+
+        /* Hero section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+        }
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+        .hero p {
+            font-size: 15px;
+            color: #888;
+        }
+
+        /* Input area */
+        .input-wrap {
+            max-width: 680px;
+            margin: 2rem auto 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 14px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
         textarea {
             width: 100%;
-            height: 120px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #e0e0e0;
-            padding: 1rem;
-            font-family: monospace;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            resize: vertical;
-        }
-        button {
-            margin-top: 1rem;
-            padding: 0.75rem 2rem;
-            background: #ffffff;
-            color: #0f0f0f;
             border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-family: monospace;
-            cursor: pointer;
-            font-weight: bold;
+            outline: none;
+            font-size: 15px;
+            color: #1a1a1a;
+            background: transparent;
+            resize: none;
+            height: 80px;
+            font-family: inherit;
+            line-height: 1.5;
         }
-        button:disabled { background: #444; color: #888; cursor: default; }
-        #status { margin-top: 1rem; font-size: 0.85rem; color: #888; }
-        #validation { margin-top: 1.5rem; }
-        .check { padding: 0.4rem 0; font-size: 0.85rem; border-bottom: 1px solid #1e1e1e; }
-        .pass { color: #4caf50; }
-        .fixed { color: #2196f3; }
-        #output {
-            margin-top: 1.5rem;
+        textarea::placeholder { color: #bbb; }
+
+        .input-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        #compileBtn {
+            padding: 0.5rem 1.25rem;
             background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 1rem;
-            white-space: pre-wrap;
-            font-size: 0.8rem;
-            max-height: 600px;
-            overflow-y: auto;
-            color: #a8d8a8;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+        #compileBtn:hover { background: #333; }
+        #compileBtn:disabled { background: #ccc; cursor: default; }
+
+        /* Preset tags */
+        .presets {
+            max-width: 680px;
+            margin: 1rem auto 0;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .preset {
+            padding: 0.4rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 99px;
+            font-size: 13px;
+            color: #555;
+            background: #fff;
+            cursor: pointer;
+        }
+        .preset:hover { border-color: #1a1a1a; color: #1a1a1a; }
+
+        /* Output area */
+        .output-wrap {
+            max-width: 780px;
+            margin: 2.5rem auto 4rem;
+            display: none;
+        }
+        .output-wrap.visible { display: block; }
+
+        .status-bar {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* Validation card */
+        .card {
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.5rem 0;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+            color: #1a1a1a;
+        }
+        .check:last-child { border-bottom: none; }
+        .check-icon {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .check-icon.pass { background: #e8f5e9; color: #2e7d32; }
+        .check-icon.fixed { background: #e3f2fd; color: #1565c0; }
+        .fix-note { font-size: 12px; color: #888; margin-left: auto; }
+
+        /* Files grid */
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 0.75rem;
+            background: #f8f8f8;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+        .file-item .icon { font-size: 15px; }
+
+        /* Schema */
+        .schema-box {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #a8d8a8;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .tab {
+            padding: 0.6rem 1.25rem;
+            font-size: 14px;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
-    <h1>App Compiler</h1>
-    <p>Natural language → structured app schema</p>
 
-    <textarea id="prompt" placeholder="Describe the app you want to build...
-Example: Build a CRM with login, contacts, dashboard, role-based access, and premium plan with payments."></textarea>
+<nav class="nav">
+    <div class="nav-logo">
+        <span>⚙</span>
+        App Compiler
+    </div>
+    <div style="font-size:13px; color:#888;">Natural language → working app</div>
+</nav>
 
-    <button id="compileBtn" onclick="compile()">Compile</button>
-    <div id="status"></div>
-    <div id="validation"></div>
-    <pre id="output"></pre>
+<div class="hero">
+    <h1>What will you build next?</h1>
+    <p>Describe your app idea and get a complete, validated skeleton instantly.</p>
+</div>
 
-    <script>
-        async function compile() {
-            const prompt = document.getElementById("prompt").value.trim();
-            if (!prompt) return;
+<div class="input-wrap">
+    <textarea id="prompt" placeholder="Describe the app you want to build..."></textarea>
+    <div class="input-footer">
+        <button id="compileBtn" onclick="compile()">
+            <span>⚡</span> Compile
+        </button>
+    </div>
+</div>
 
-            const btn = document.getElementById("compileBtn");
-            const status = document.getElementById("status");
-            const output = document.getElementById("output");
-            const validation = document.getElementById("validation");
+<div class="presets">
+    <div class="preset" onclick="setPreset('crm')">CRM & Sales</div>
+    <div class="preset" onclick="setPreset('task')">Tasks & Workflows</div>
+    <div class="preset" onclick="setPreset('blog')">Content & Sites</div>
+    <div class="preset" onclick="setPreset('booking')">Booking</div>
+    <div class="preset" onclick="setPreset('finance')">Finance</div>
+</div>
 
-            btn.disabled = true;
-            btn.textContent = "Compiling...";
-            status.textContent = "Running pipeline... this takes 15-20 seconds";
-            output.textContent = "";
-            validation.innerHTML = "";
+<div class="output-wrap" id="outputWrap">
+    <div class="status-bar" id="status"></div>
 
-            try {
-                const response = await fetch("http://localhost:5000/generate", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt: prompt })
-                });
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('validation')">Validation</div>
+        <div class="tab" onclick="switchTab('files')">Generated Files</div>
+        <div class="tab" onclick="switchTab('schema')">Schema</div>
+    </div>
 
-                const data = await response.json();
+    <div class="tab-content active" id="tab-validation">
+        <div class="card">
+            <div class="card-title">Validation Checks</div>
+            <div id="validationList"></div>
+        </div>
+    </div>
 
-                // Show validation results
-                validation.innerHTML = "<strong>Validation:</strong><br>" +
-                    data.validation.map(v => {
-                        const cls = v.passed ? "pass" : "fixed";
-                        const icon = v.passed ? "✓" : "⚡";
-                        const fix = v.fix ? ` → ${v.fix}` : "";
-                        return `<div class="check ${cls}">${icon} ${v.check}${fix}</div>`;
-                    }).join("");
-                
-                // Show generated files
-                const files = data.generated_files;
-                const fileList = document.createElement("div");
-                fileList.innerHTML = "<br><strong>Generated Files:</strong><br>" + 
-                    files.map(f => `<div style="color: #888; font-size: 0.8rem;">📄 ${f}</div>`).join("");
-                validation.appendChild(fileList);
-                // Show schema
-                output.textContent = JSON.stringify(data.schema, null, 2);
-                status.textContent = "Done.";
+    <div class="tab-content" id="tab-files">
+        <div class="card">
+            <div class="card-title">Generated Files</div>
+            <div class="files-grid" id="filesList"></div>
+        </div>
+    </div>
 
-            } catch (err) {
-                status.textContent = "Error: " + err.message;
-            }
+    <div class="tab-content" id="tab-schema">
+        <div class="card">
+            <div class="card-title">Full Schema</div>
+            <div class="schema-box" id="schemaBox"></div>
+        </div>
+    </div>
+</div>
 
-            btn.disabled = false;
-            btn.textContent = "Compile";
-        }
-    </script>
+<script>
+const PRESETS = {
+    crm: "Build a CRM with login, contacts, dashboard, role-based access (admin, sales, viewer), and a premium plan with Stripe payments. Admins can see analytics.",
+    task: "Build a task manager with team workspaces, assignees, due dates, priorities, and Kanban boards. Free plan: 3 boards. Pro plan: unlimited.",
+    blog: "Create a blog platform with rich text editor, categories, tags, comments, and email newsletter subscriptions. Authors can publish or draft posts.",
+    booking: "Build a booking system for a restaurant with table reservations, time slots, customer profiles, and email confirmations. Admins manage availability.",
+    finance: "Build a personal finance tracker with income and expense logging, budget categories, monthly reports, and goal setting."
+};
+
+function setPreset(key) {
+    document.getElementById('prompt').value = PRESETS[key];
+}
+
+function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', ['validation','files','schema'][i] === name);
+    });
+    document.querySelectorAll('.tab-content').forEach(t => {
+        t.classList.toggle('active', t.id === 'tab-' + name);
+    });
+}
+
+function fileIcon(name) {
+    if (name.endsWith('.py')) return '🐍';
+    if (name.endsWith('.html')) return '🌐';
+    if (name.endsWith('.txt')) return '📄';
+    return '📁';
+}
+
+async function compile() {
+    const prompt = document.getElementById('prompt').value.trim();
+    if (!prompt) return;
+
+    const btn = document.getElementById('compileBtn');
+    const status = document.getElementById('status');
+    const outputWrap = document.getElementById('outputWrap');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span> Compiling...';
+    status.textContent = 'Running pipeline — this takes 20–30 seconds...';
+    outputWrap.classList.add('visible');
+
+    document.getElementById('validationList').innerHTML = '';
+    document.getElementById('filesList').innerHTML = '';
+    document.getElementById('schemaBox').textContent = '';
+
+    try {
+        const response = await fetch('http://localhost:5000/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+        });
+
+        const data = await response.json();
+
+        // Validation
+        document.getElementById('validationList').innerHTML = data.validation.map(v => {
+            const cls = v.passed ? 'pass' : 'fixed';
+            const icon = v.passed ? '✓' : '⚡';
+            const fix = v.fix ? `<span class="fix-note">→ ${v.fix}</span>` : '';
+            return `<div class="check">
+                <div class="check-icon ${cls}">${icon}</div>
+                <span>${v.check}</span>
+                ${fix}
+            </div>`;
+        }).join('');
+
+        // Files
+        document.getElementById('filesList').innerHTML = data.generated_files.map(f =>
+            `<div class="file-item"><span class="icon">${fileIcon(f)}</span>${f}</div>`
+        ).join('');
+
+        // Schema
+        document.getElementById('schemaBox').textContent = JSON.stringify(data.schema, null, 2);
+
+        status.textContent = `Done — ${data.generated_files.length} files generated.`;
+        switchTab('validation');
+
+    } catch (err) {
+        status.textContent = 'Error: ' + err.message;
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<span>⚡</span> Compile';
+}
+</script>
 </body>
 </html>
